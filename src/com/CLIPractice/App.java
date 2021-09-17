@@ -13,12 +13,12 @@ public class App {
 
     public static void start() {
         App app = new App();
-        app.welcome();
-        app.createUser();
-        app.addUserEmail();
-        app.addUserLogin();
-        app.logIn();
-        app.goodbye();
+            app.welcome();
+            app.createUser();
+            app.addUserEmail();
+            app.addUserLogin();
+            app.logIn();
+            app.goodbye();
     }
 
     private App() {
@@ -46,23 +46,8 @@ public class App {
         System.out.println("Hi " + currentUser.name() + "!");
     }
 
-    private int getAge() {
-        int age = 0;
-        while(age == 0) {
-            System.out.println("Please enter your age:");
-            try {
-                age = this.scanner.nextInt();
-            }
-            catch (InputMismatchException e) {
-                if(e.getMessage() != null) {
-                    System.out.println("Invalid Input " + e.getMessage());
-                } else {
-                    System.out.println("Invalid Input.");
-                }
-                this.scanner.nextLine(); // consumes the token from nextInt(), to clear the Exception and avoid an indefinite loop
-            }
-        }
-        return age;
+    private void exit() {
+        System.exit(0);
     }
 
     private String getInput(String type) {
@@ -71,6 +56,8 @@ public class App {
             System.out.println("Please enter your " + type + ":");
             try {
                 input = this.scanner.nextLine();
+                if (input.equals("exit"))
+                    exit();
                 if (notValid(type, input)) {
                     input = ""; // reset to continue looping until valid
                     throw new InputMismatchException("Invalid Input: " + this.invalidInputMessage); //REFACTOR to include specific error
@@ -87,31 +74,22 @@ public class App {
         return input;
     }
 
-    private String getName() {
-        String name = "";
-        while(name == "") {
-            System.out.println("Please enter your name:");
-            try {
-                name = this.scanner.nextLine();
-                if (notValidName(name)) {
-                    name = ""; // reset name to continue the loop
-                    throw new InputMismatchException("Input cannot contain non-Alpha characters.");
-                }
-            } catch (InputMismatchException e) {
-                if(e.getMessage() != null) {
-                    System.out.println(e.getMessage());
-                } else {
-                    System.out.println("Invalid Input.");
-                }
-            }
-        }
-        return name;
-    }
-
     private void goodbye() {
         System.out.println("Welp, that's it. There's really nothing to do here.");
         System.out.println("Sorry to waste your time " + this.currentUser.name());
         System.out.println("Goodbye!");
+        System.exit(0);
+    }
+
+    private void logIn() {
+        System.out.println("Welcome " + this.currentUser.name() + " please enter your credentials to log in.");
+        String password = "";
+        String username = "";
+        while (!this.currentUser.login().valid(password, username)) {
+            username = this.getInput("username");
+            password = this.getInput("password");
+        }
+        System.out.println("You've successfully logged in!");
     }
 
     private boolean notValid(String type, String input) {
@@ -153,30 +131,7 @@ public class App {
         return m.find();
     }
 
-    private boolean notValidName(String n) {
-        Pattern p = Pattern.compile("[^a-z]", Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(n);
-        return m.find();
-    }
-
-    private boolean notValidAge(String a) {
-        Pattern p = Pattern.compile("[^0-9]");
-        Matcher m = p.matcher(a);
-        return m.find();
-    }
-
-    private void logIn() {
-        System.out.println("Welcome " + this.currentUser.name() + " please enter your credentials to log in.");
-        String password = "";
-        String username = "";
-        while (!this.currentUser.login().valid(password, username)) {
-            username = this.getInput("username");
-            password = this.getInput("password");
-        }
-        System.out.println("You've successfully logged in!");
-    }
-
     private void welcome() {
-        System.out.println("Welcome to the User Creator!");
+        System.out.println("Welcome to the User Creator! Type 'exit' at any time to exit.");
     }
 }
